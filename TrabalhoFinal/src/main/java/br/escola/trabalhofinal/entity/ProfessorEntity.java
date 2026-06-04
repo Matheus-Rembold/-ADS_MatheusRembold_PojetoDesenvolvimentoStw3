@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ import java.util.Date;
  * @author 204128
  */
 @Entity
+@Table(name = "professor")
 public class ProfessorEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

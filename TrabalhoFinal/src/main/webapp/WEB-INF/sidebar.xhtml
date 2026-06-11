@@ -7,7 +7,7 @@
     xmlns:pm="http://primefaces.org/manhattan">
 
     <div class="layout-sidebar">
-        <div class="layout-sidebar-logo">            
+        <div class="layout-sidebar-logo">
             <a href="#" id="layout-sidebar-anchor" class="layout-sidebar-anchor" title="Toggle Menu">
                 <i class="pi"/>
             </a>
@@ -16,7 +16,14 @@
         <div class="layout-menu-container">
             <h:form id="menuform">
                 <pm:menu widgetVar="ManhattanMenuWidget">
-                    <p:menuitem id="mnuPessoa" value="Pessoa" icon="pi pi-fw pi-home" outcome="index.xhtml"/>
+                    <p:menuitem id="mnuProfessor"
+                                value="Professor"
+                                icon="pi pi-fw pi-user"
+                                outcome="/admin/professor.xhtml"/>
+                    <p:menuitem id="mnuSair"
+                                value="Sair"
+                                action="#{loginController.logout()}"
+                                icon="pi pi-fw pi-sign-out"/>
                 </pm:menu>
             </h:form>
         </div>

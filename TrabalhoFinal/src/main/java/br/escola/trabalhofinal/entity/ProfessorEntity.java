@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.escola.trabalhofinal.entity;
 
 import jakarta.persistence.Basic;
@@ -17,44 +13,45 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
-/**
- *
- * @author 204128
- */
 @Entity
 @Table(name = "professor")
 public class ProfessorEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    @Basic(optional = false) //atributo não é opcional
-    @NotNull //definido como obrigatório
-    @Size(min = 1, max = 500) //quantidade min e max de caracteres
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 60)
     @Column(name = "nome")
     private String nome;
-    
+
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 250)
-    @Column(name = "email")
-    private String email;
-    
-    @Basic(optional = false)
-    @NotNull
+    @Size(min = 1, max = 60)
     @Column(name = "senha")
     private String senha;
-    
-    
-    
+
     @Basic(optional = false)
     @NotNull
     @Temporal(TemporalType.DATE)
     @Column(name = "datanascimento")
     private Date dataNascimento;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getNome() {
         return nome;
@@ -62,14 +59,6 @@ public class ProfessorEntity implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getSenha() {
@@ -87,41 +76,32 @@ public class ProfessorEntity implements Serializable {
     public void setDataNascimento(Date dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
-    
-    
-    
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 3;
+        hash = 97 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ProfessorEntity)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        ProfessorEntity other = (ProfessorEntity) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        return true;
+        final ProfessorEntity other = (ProfessorEntity) obj;
+        return Objects.equals(this.id, other.id);
     }
 
     @Override
     public String toString() {
-        return "br.escola.trabalhofinal.entity.ProfessorEntity[ id=" + id + " ]";
+        return nome;
     }
-    
+
 }

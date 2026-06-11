@@ -1,4 +1,4 @@
-package br.upf.projetojfprimefaces.facade;
+package br.escola.trabalhofinal.facade;
 
 import jakarta.persistence.EntityManager;
 import java.util.List;

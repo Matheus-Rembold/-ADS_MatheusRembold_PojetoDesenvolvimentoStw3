@@ -6,7 +6,10 @@ import jakarta.ejb.EJBException;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +50,62 @@ public class ProfessorController implements Serializable {
     }
 
     /**
+     * Busca um professor pelo id. Utilizado pelo converter para reconstruir
+     * o objeto ProfessorEntity a partir do valor selecionado no selectOneMenu.
+     */
+    public ProfessorEntity getProfessor(java.lang.Integer id) {
+        return ejbFacade.find(id);
+    }
+
+    /**
+     * Método responsável por tratar das conversões para o front (xhtml).
+     * Necessário para o p:selectOneMenu funcionar com objetos ProfessorEntity,
+     * por exemplo no atributo idProfessor da entidade Turma.
+     */
+    @FacesConverter(forClass = ProfessorEntity.class)
+    public static class ProfessorControllerConverter implements Converter {
+
+        @Override
+        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+            if (value == null || value.length() == 0) {
+                return null;
+            }
+            ProfessorController controller
+                    = (ProfessorController) facesContext.getApplication().getELResolver().
+                            getValue(facesContext.getELContext(),
+                                    null, "professorController");
+            return controller.getProfessor(getKey(value));
+        }
+
+        java.lang.Integer getKey(String value) {
+            java.lang.Integer key;
+            key = Integer.valueOf(value);
+            return key;
+        }
+
+        String getStringKey(java.lang.Integer value) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(value);
+            return sb.toString();
+        }
+
+        @Override
+        public String getAsString(FacesContext facesContext,
+                UIComponent component, Object object) {
+            if (object == null) {
+                return null;
+            }
+            if (object instanceof ProfessorEntity) {
+                ProfessorEntity o = (ProfessorEntity) object;
+                return getStringKey(o.getId());
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
      * Prepara um novo objeto professor antes de abrir o formulário de criação.
-     * @return 
      */
     public ProfessorEntity prepareAdicionar() {
         professor = new ProfessorEntity();

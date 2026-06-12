@@ -1,7 +1,11 @@
+br\escola\trabalhofinal\controller\ProfessorController$ProfessorControllerConverter.class
 br\escola\trabalhofinal\entity\ProfessorEntity.class
+br\escola\trabalhofinal\facade\TurmaFacade.class
 br\escola\trabalhofinal\facade\ProfessorFacade.class
 br\escola\trabalhofinal\facade\AbstractFacade.class
 br\escola\trabalhofinal\JakartaRestConfiguration.class
+br\escola\trabalhofinal\controller\TurmaController.class
+br\escola\trabalhofinal\controller\TurmaController$PersistAction.class
 br\escola\trabalhofinal\FiltroAdministrativo.class
 br\escola\trabalhofinal\entity\AtividadeEntity.class
 br\escola\trabalhofinal\controller\LoginController.class

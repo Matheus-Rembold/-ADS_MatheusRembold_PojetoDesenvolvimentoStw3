@@ -1,0 +1,251 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Turma"/>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">
+            <p:growl id="growl" showDetail="true"/>
+            <h:panelGroup id="pngList">
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalist"
+                                 value="#{turmaController.turmaList}"
+                                 var="item"
+                                 selectionMode="single"
+                                 selection="#{turmaController.selected}"
+                                 widgetVar="datalistTurmaWidgetVar"
+                                 rowKey="#{item.id}"
+                                 paginator="true"
+                                 rows="5"
+                                 rowsPerPageTemplate="5,10,50,100"
+                                 emptyMessage="Nenhuma turma cadastrada...">
+
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
+
+                        <p:column width="4%" sortBy="#{item.id}" filterBy="#{item.id}">
+                            <f:facet name="header">
+                                <h:outputText value="ID"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.serie}" filterBy="#{item.serie}">
+                            <f:facet name="header">
+                                <h:outputText value="Série"/>
+                            </f:facet>
+                            <h:outputText value="#{item.serie}º ano"/>
+                        </p:column>
+
+                        <p:column width="12%" sortBy="#{item.dataInicio}" filterBy="#{item.dataInicio}">
+                            <f:facet name="header">
+                                <h:outputText value="Data de Início"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataInicio}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="20%" sortBy="#{item.idProfessor.nome}" filterBy="#{item.idProfessor.nome}"
+                                  filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="Professor"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idProfessor.nome}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:commandButton id="btnCreate"
+                                             value="Incluir Turma"
+                                             icon="pi pi-plus"
+                                             actionListener="#{turmaController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                             oncomplete="PF('dlgCreate').show()"/>
+
+                            <p:commandButton id="btnEdit"
+                                             value="Editar Turma"
+                                             icon="pi pi-user-edit"
+                                             update=":EditForm"
+                                             oncomplete="PF('dlgEdit').show()"
+                                             disabled="#{empty turmaController.selected}"/>
+
+                            <p:commandButton id="btnDelete"
+                                             value="Excluir Turma"
+                                             icon="pi pi-trash"
+                                             actionListener="#{turmaController.deletar()}"
+                                             update=":frmList"
+                                             disabled="#{empty turmaController.selected}">
+                                <p:confirm header="Confirmar Exclusão"
+                                           message="Você confirma a exclusão do registro?"
+                                           icon="ui-icon-alert"/>
+                            </p:commandButton>
+
+                            <p:commandButton id="btnView"
+                                             value="Detalhes da Turma"
+                                             icon="pi pi-search"
+                                             update=":formView"
+                                             oncomplete="PF('dlgView').show()"
+                                             disabled="#{empty turmaController.selected}"/>
+                        </f:facet>
+                    </p:dataTable>
+                </p:fieldset>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button"
+                                     styleClass="ui-confirmdialog-yes" icon="fa fa-check"/>
+                    <p:commandButton value="Não" type="button"
+                                     styleClass="ui-confirmdialog-no"  icon="fa fa-times"/>
+                </p:confirmDialog>
+            </h:panelGroup>
+        </h:form>
+
+        <!-- Diálogo: Criar Turma -->
+        <p:dialog header="Nova Turma"
+                  widgetVar="dlgCreate"
+                  modal="true"
+                  resizable="false"
+                  appendTo="@(body)">
+            <h:form id="CreateForm">
+                <p:growl id="growlCreate" showDetail="true"/>
+                <h:panelGroup id="display">
+                    <h:panelGrid columns="2" rendered="#{turmaController.turma != null}">
+
+                        <p:outputLabel value="Série:" for="iptSerie"/>
+                        <p:inputNumber id="iptSerie"
+                                       label="Série"
+                                       value="#{turmaController.turma.serie}"
+                                       minValue="1"
+                                       maxValue="9"
+                                       decimalPlaces="0"/>
+
+                        <p:outputLabel value="Data de Início:" for="ipmDataInicio"/>
+                        <p:inputMask id="ipmDataInicio"
+                                     mask="99/99/9999"
+                                     required="true"
+                                     requiredMessage="A data de início é obrigatória"
+                                     value="#{turmaController.turma.dataInicio}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:inputMask>
+
+                        <p:outputLabel value="Professor:" for="idProfessor"/>
+                        <p:selectOneMenu id="idProfessor"
+                                         value="#{turmaController.turma.idProfessor}"
+                                         required="true"
+                                         requiredMessage="O professor responsável é obrigatório"
+                                         panelStyle="width:180px"
+                                         filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione um professor..."/>
+                            <f:selectItems value="#{professorController.professorList}"
+                                           var="professorItem"
+                                           itemValue="#{professorItem}"
+                                           itemLabel="#{professorItem.nome}"/>
+                        </p:selectOneMenu>
+
+                    </h:panelGrid>
+
+                    <p:commandButton value="Cadastrar"
+                                     icon="pi pi-save"
+                                     actionListener="#{turmaController.adicionar()}"
+                                     update="display, :frmList"
+                                     onclick="PF('dlgCreate').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+        <!-- Diálogo: Editar Turma -->
+        <p:dialog header="Editar Turma"
+                  widgetVar="dlgEdit"
+                  modal="true"
+                  resizable="false"
+                  appendTo="@(body)">
+            <h:form id="EditForm">
+                <p:growl id="growlEdit" showDetail="true"/>
+                <h:panelGroup id="displayEdit">
+                    <h:panelGrid columns="2" rendered="#{turmaController.selected != null}">
+
+                        <p:outputLabel value="ID:" for="iptId"/>
+                        <p:inputText id="iptId"
+                                     size="10"
+                                     disabled="true"
+                                     value="#{turmaController.selected.id}"/>
+
+                        <p:outputLabel value="Série:" for="iptSerieEdit"/>
+                        <p:inputNumber id="iptSerieEdit"
+                                       label="Série"
+                                       value="#{turmaController.selected.serie}"
+                                       minValue="1"
+                                       maxValue="9"
+                                       decimalPlaces="0"/>
+
+                        <p:outputLabel value="Data de Início:" for="ipmDataInicioEdit"/>
+                        <p:inputMask id="ipmDataInicioEdit"
+                                     mask="99/99/9999"
+                                     required="true"
+                                     requiredMessage="A data de início é obrigatória"
+                                     value="#{turmaController.selected.dataInicio}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:inputMask>
+
+                        <p:outputLabel value="Professor:" for="idProfessorEdit"/>
+                        <p:selectOneMenu id="idProfessorEdit"
+                                         value="#{turmaController.selected.idProfessor}"
+                                         required="true"
+                                         requiredMessage="O professor responsável é obrigatório"
+                                         panelStyle="width:180px"
+                                         filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione um professor..."/>
+                            <f:selectItems value="#{professorController.professorList}"
+                                           var="professorItem"
+                                           itemValue="#{professorItem}"
+                                           itemLabel="#{professorItem.nome}"/>
+                        </p:selectOneMenu>
+
+                    </h:panelGrid>
+
+                    <p:commandButton value="Salvar"
+                                     icon="pi pi-save"
+                                     actionListener="#{turmaController.editar()}"
+                                     update="displayEdit, :frmList"
+                                     onclick="PF('dlgEdit').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+        <!-- Diálogo: Visualizar Turma -->
+        <p:dialog header="Detalhes da Turma"
+                  widgetVar="dlgView"
+                  height="250"
+                  width="500"
+                  showEffect="fade"
+                  modal="true">
+            <h:form id="formView">
+                <h:panelGrid id="pngView" columns="2"
+                             rendered="#{turmaController.selected != null}">
+
+                    <p:outputLabel value="ID:"/>
+                    <p:outputLabel value="#{turmaController.selected.id}"/>
+
+                    <p:outputLabel value="Série:"/>
+                    <p:outputLabel value="#{turmaController.selected.serie}º ano"/>
+
+                    <p:outputLabel value="Data de Início:"/>
+                    <p:outputLabel value="#{turmaController.selected.dataInicio}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Professor:"/>
+                    <p:outputLabel value="#{turmaController.selected.idProfessor.nome}"/>
+
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>

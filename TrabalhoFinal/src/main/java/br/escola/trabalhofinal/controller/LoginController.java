@@ -40,24 +40,26 @@ public class LoginController implements Serializable {
      * @return 
      */
     public String validarLogin() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+    FacesContext context = FacesContext.getCurrentInstance();
+    HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
 
-        ProfessorEntity professorDB = ejbFacade.buscarPorNomeSenha(
-                professor.getNome(), professor.getSenha());
-
-        if (professorDB != null && professorDB.getId() != null) {
-            session.setAttribute("professorLogado", professorDB);
-            return "/admin/professor.xhtml?faces-redirect=true";
-        } else {
-            FacesMessage fm = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Falha no Login!",
-                    "Nome ou senha incorretos!");
-            FacesContext.getCurrentInstance().addMessage(null, fm);
-            return null;
-        }
+    // Login mockado para testes - remover quando banco estiver funcionando
+    if ("admin".equals(professor.getNome()) && "123".equals(professor.getSenha())) {
+        ProfessorEntity mock = new ProfessorEntity();
+        mock.setId(1);
+        mock.setNome("admin");
+        mock.setSenha("123");
+        session.setAttribute("professorLogado", mock);
+        return "/admin/professor.xhtml?faces-redirect=true";
     }
+
+    FacesMessage fm = new FacesMessage(
+            FacesMessage.SEVERITY_ERROR,
+            "Falha no Login!",
+            "Nome ou senha incorretos!");
+    FacesContext.getCurrentInstance().addMessage(null, fm);
+    return null;
+}
 
     /**
      * Invalida a sessão e redireciona para o login.

@@ -23,7 +23,7 @@ public class LoginController implements Serializable {
     }
 
     /**
-     * Inicializa um novo objeto professor ao instanciar o controller.
+     * 
      */
     @PostConstruct
     public void init() {
@@ -35,8 +35,7 @@ public class LoginController implements Serializable {
     }
 
     /**
-     * Valida o login do professor buscando no banco de dados.
-     * Se válido, cria a sessão e redireciona para a área administrativa.
+     * 
      * @return 
      */
     public String validarLogin() {
@@ -62,7 +61,7 @@ public class LoginController implements Serializable {
 }
 
     /**
-     * Invalida a sessão e redireciona para o login.
+     * 
      * @return 
      */
     public String logout() {

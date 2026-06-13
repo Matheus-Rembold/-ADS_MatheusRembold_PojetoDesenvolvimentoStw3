@@ -1,0 +1,319 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Parecer"/>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">
+            <p:growl id="growl" showDetail="true"/>
+            <h:panelGroup id="pngList">
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalist"
+                                 value="#{parecerController.parecerList}"
+                                 var="item"
+                                 selectionMode="single"
+                                 selection="#{parecerController.selected}"
+                                 widgetVar="datalistParecerWidgetVar"
+                                 rowKey="#{item.id}"
+                                 paginator="true"
+                                 rows="5"
+                                 rowsPerPageTemplate="5,10,50,100"
+                                 emptyMessage="Nenhum parecer cadastrado...">
+
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
+
+                        <p:column width="4%" sortBy="#{item.id}" filterBy="#{item.id}">
+                            <f:facet name="header">
+                                <h:outputText value="ID"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.dataEmissao}" filterBy="#{item.dataEmissao}">
+                            <f:facet name="header">
+                                <h:outputText value="Data de Emissão"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataEmissao}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.periodo}" filterBy="#{item.periodo}">
+                            <f:facet name="header">
+                                <h:outputText value="Período"/>
+                            </f:facet>
+                            <h:outputText value="#{item.periodo}"/>
+                        </p:column>
+
+                        <p:column width="18%" sortBy="#{item.idAluno.nome}" filterBy="#{item.idAluno.nome}"
+                                  filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="Aluno"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idAluno.nome}"/>
+                        </p:column>
+
+                        <p:column width="18%" sortBy="#{item.idProfessor.nome}" filterBy="#{item.idProfessor.nome}"
+                                  filterMatchMode="contains">
+                            <f:facet name="header">
+                                <h:outputText value="Professor"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idProfessor.nome}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:commandButton id="btnCreate"
+                                             value="Incluir Parecer"
+                                             icon="pi pi-plus"
+                                             actionListener="#{parecerController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                             oncomplete="PF('dlgCreate').show()"/>
+
+                            <p:commandButton id="btnEdit"
+                                             value="Editar Parecer"
+                                             icon="pi pi-user-edit"
+                                             update=":EditForm"
+                                             oncomplete="PF('dlgEdit').show()"
+                                             disabled="#{empty parecerController.selected}"/>
+
+                            <p:commandButton id="btnDelete"
+                                             value="Excluir Parecer"
+                                             icon="pi pi-trash"
+                                             actionListener="#{parecerController.deletar()}"
+                                             update=":frmList"
+                                             disabled="#{empty parecerController.selected}">
+                                <p:confirm header="Confirmar Exclusão"
+                                           message="Você confirma a exclusão do registro?"
+                                           icon="ui-icon-alert"/>
+                            </p:commandButton>
+
+                            <p:commandButton id="btnView"
+                                             value="Detalhes do Parecer"
+                                             icon="pi pi-search"
+                                             update=":formView"
+                                             oncomplete="PF('dlgView').show()"
+                                             disabled="#{empty parecerController.selected}"/>
+                        </f:facet>
+                    </p:dataTable>
+                </p:fieldset>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button"
+                                     styleClass="ui-confirmdialog-yes" icon="fa fa-check"/>
+                    <p:commandButton value="Não" type="button"
+                                     styleClass="ui-confirmdialog-no"  icon="fa fa-times"/>
+                </p:confirmDialog>
+            </h:panelGroup>
+        </h:form>
+
+        <!-- Diálogo: Criar Parecer -->
+        <p:dialog header="Novo Parecer"
+                  widgetVar="dlgCreate"
+                  modal="true"
+                  resizable="false"
+                  appendTo="@(body)">
+            <h:form id="CreateForm">
+                <p:growl id="growlCreate" showDetail="true"/>
+                <h:panelGroup id="display">
+                    <h:panelGrid columns="2" rendered="#{parecerController.parecer != null}">
+
+                        <p:outputLabel value="Data de Emissão:" for="ipmDataEmissao"/>
+                        <p:inputMask id="ipmDataEmissao"
+                                     mask="99/99/9999"
+                                     required="true"
+                                     requiredMessage="A data de emissão é obrigatória"
+                                     value="#{parecerController.parecer.dataEmissao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:inputMask>
+
+                        <p:outputLabel value="Período:" for="somPeriodo"/>
+                        <p:selectOneMenu id="somPeriodo"
+                                         value="#{parecerController.parecer.periodo}"
+                                         required="true"
+                                         requiredMessage="O período é obrigatório">
+                            <f:selectItem itemLabel="Selecione um período..." itemValue=""/>
+                            <f:selectItems value="#{parecerController.periodos}"
+                                           var="periodoItem"
+                                           itemValue="#{periodoItem}"
+                                           itemLabel="#{periodoItem}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Aluno:" for="idAluno"/>
+                        <p:selectOneMenu id="idAluno"
+                                         value="#{parecerController.parecer.idAluno}"
+                                         required="true"
+                                         requiredMessage="O aluno é obrigatório"
+                                         panelStyle="width:180px"
+                                         filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione um aluno..."/>
+                            <f:selectItems value="#{alunoController.alunoList}"
+                                           var="alunoItem"
+                                           itemValue="#{alunoItem}"
+                                           itemLabel="#{alunoItem.nome}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Professor:" for="idProfessor"/>
+                        <p:selectOneMenu id="idProfessor"
+                                         value="#{parecerController.parecer.idProfessor}"
+                                         required="true"
+                                         requiredMessage="O professor é obrigatório"
+                                         panelStyle="width:180px"
+                                         filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione um professor..."/>
+                            <f:selectItems value="#{professorController.professorList}"
+                                           var="professorItem"
+                                           itemValue="#{professorItem}"
+                                           itemLabel="#{professorItem.nome}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Conteúdo:" for="txtConteudo"/>
+                        <p:inputTextarea id="txtConteudo"
+                                          rows="6" cols="40"
+                                          autoResize="false"
+                                          label="Conteúdo"
+                                          required="true"
+                                          requiredMessage="O conteúdo do parecer é obrigatório"
+                                          value="#{parecerController.parecer.conteudo}"/>
+
+                    </h:panelGrid>
+
+                    <p:commandButton value="Cadastrar"
+                                     icon="pi pi-save"
+                                     actionListener="#{parecerController.adicionar()}"
+                                     update="display, :frmList"
+                                     onclick="PF('dlgCreate').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+        <!-- Diálogo: Editar Parecer -->
+        <p:dialog header="Editar Parecer"
+                  widgetVar="dlgEdit"
+                  modal="true"
+                  resizable="false"
+                  appendTo="@(body)">
+            <h:form id="EditForm">
+                <p:growl id="growlEdit" showDetail="true"/>
+                <h:panelGroup id="displayEdit">
+                    <h:panelGrid columns="2" rendered="#{parecerController.selected != null}">
+
+                        <p:outputLabel value="ID:" for="iptId"/>
+                        <p:inputText id="iptId"
+                                     size="10"
+                                     disabled="true"
+                                     value="#{parecerController.selected.id}"/>
+
+                        <p:outputLabel value="Data de Emissão:" for="ipmDataEmissaoEdit"/>
+                        <p:inputMask id="ipmDataEmissaoEdit"
+                                     mask="99/99/9999"
+                                     required="true"
+                                     requiredMessage="A data de emissão é obrigatória"
+                                     value="#{parecerController.selected.dataEmissao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:inputMask>
+
+                        <p:outputLabel value="Período:" for="somPeriodoEdit"/>
+                        <p:selectOneMenu id="somPeriodoEdit"
+                                         value="#{parecerController.selected.periodo}"
+                                         required="true"
+                                         requiredMessage="O período é obrigatório">
+                            <f:selectItem itemLabel="Selecione um período..." itemValue=""/>
+                            <f:selectItems value="#{parecerController.periodos}"
+                                           var="periodoItem"
+                                           itemValue="#{periodoItem}"
+                                           itemLabel="#{periodoItem}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Aluno:" for="idAlunoEdit"/>
+                        <p:selectOneMenu id="idAlunoEdit"
+                                         value="#{parecerController.selected.idAluno}"
+                                         required="true"
+                                         requiredMessage="O aluno é obrigatório"
+                                         panelStyle="width:180px"
+                                         filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione um aluno..."/>
+                            <f:selectItems value="#{alunoController.alunoList}"
+                                           var="alunoItem"
+                                           itemValue="#{alunoItem}"
+                                           itemLabel="#{alunoItem.nome}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Professor:" for="idProfessorEdit"/>
+                        <p:selectOneMenu id="idProfessorEdit"
+                                         value="#{parecerController.selected.idProfessor}"
+                                         required="true"
+                                         requiredMessage="O professor é obrigatório"
+                                         panelStyle="width:180px"
+                                         filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione um professor..."/>
+                            <f:selectItems value="#{professorController.professorList}"
+                                           var="professorItem"
+                                           itemValue="#{professorItem}"
+                                           itemLabel="#{professorItem.nome}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Conteúdo:" for="txtConteudoEdit"/>
+                        <p:inputTextarea id="txtConteudoEdit"
+                                          rows="6" cols="40"
+                                          autoResize="false"
+                                          label="Conteúdo"
+                                          required="true"
+                                          requiredMessage="O conteúdo do parecer é obrigatório"
+                                          value="#{parecerController.selected.conteudo}"/>
+
+                    </h:panelGrid>
+
+                    <p:commandButton value="Salvar"
+                                     icon="pi pi-save"
+                                     actionListener="#{parecerController.editar()}"
+                                     update="displayEdit, :frmList"
+                                     onclick="PF('dlgEdit').hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+        <!-- Diálogo: Visualizar Parecer -->
+        <p:dialog header="Detalhes do Parecer"
+                  widgetVar="dlgView"
+                  height="400"
+                  width="550"
+                  showEffect="fade"
+                  modal="true">
+            <h:form id="formView">
+                <h:panelGrid id="pngView" columns="2"
+                             rendered="#{parecerController.selected != null}">
+
+                    <p:outputLabel value="ID:"/>
+                    <p:outputLabel value="#{parecerController.selected.id}"/>
+
+                    <p:outputLabel value="Data de Emissão:"/>
+                    <p:outputLabel value="#{parecerController.selected.dataEmissao}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Período:"/>
+                    <p:outputLabel value="#{parecerController.selected.periodo}"/>
+
+                    <p:outputLabel value="Aluno:"/>
+                    <p:outputLabel value="#{parecerController.selected.idAluno.nome}"/>
+
+                    <p:outputLabel value="Professor:"/>
+                    <p:outputLabel value="#{parecerController.selected.idProfessor.nome}"/>
+
+                    <p:outputLabel value="Conteúdo:"/>
+                    <p:outputLabel value="#{parecerController.selected.conteudo}"/>
+
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>

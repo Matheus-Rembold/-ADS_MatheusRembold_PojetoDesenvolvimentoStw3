@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.escola.trabalhofinal.entity;
 
 import jakarta.persistence.Basic;
@@ -10,34 +6,50 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Objects;
 
-/**
- *
- * @author 204128
- */
 @Entity
+@Table(name = "atividade")
 public class AtividadeEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    
-    
-    @Basic(optional = false) //atributo não é opcional
-    @NotNull //definido como obrigatório
-    @Size(min = 1, max = 2000) //quantidade min e max de caracteres
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 100)
     @Column(name = "descricao")
     private String descricao;
-    
-    @Basic(optional = false) //atributo não é opcional
-    @NotNull //definido como obrigatório
-    @Size(min = 1, max = 3000) //quantidade min e max de caracteres
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 1000)
     @Column(name = "conteudo")
     private String conteudo;
+
+    // mapeamento (n:1) - várias atividades podem pertencer ao mesmo aluno
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "idaluno", referencedColumnName = "id")
+    private AlunoEntity idAluno;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getDescricao() {
         return descricao;
@@ -54,41 +66,40 @@ public class AtividadeEntity implements Serializable {
     public void setConteudo(String conteudo) {
         this.conteudo = conteudo;
     }
-    
-    
-    
-    
-    public Long getId() {
-        return id;
+
+    public AlunoEntity getIdAluno() {
+        return idAluno;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdAluno(AlunoEntity idAluno) {
+        this.idAluno = idAluno;
     }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 11;
+        hash = 59 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AtividadeEntity)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        AtividadeEntity other = (AtividadeEntity) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        return true;
+        final AtividadeEntity other = (AtividadeEntity) obj;
+        return Objects.equals(this.id, other.id);
     }
 
     @Override
     public String toString() {
-        return "br.escola.trabalhofinal.entity.AtividadeEntity[ id=" + id + " ]";
+        return descricao;
     }
-    
+
 }

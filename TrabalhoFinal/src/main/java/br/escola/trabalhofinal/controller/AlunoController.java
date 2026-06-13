@@ -1,6 +1,6 @@
 package br.escola.trabalhofinal.controller;
 
-import br.escola.trabalhofinal.entity.TurmaEntity;
+import br.escola.trabalhofinal.entity.AlunoEntity;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
 import jakarta.inject.Named;
@@ -14,65 +14,65 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Named(value = "turmaController")
+@Named(value = "alunoController")
 @SessionScoped
-public class TurmaController implements Serializable {
+public class AlunoController implements Serializable {
 
     @EJB
-    private br.escola.trabalhofinal.facade.TurmaFacade ejbFacade;
+    private br.escola.trabalhofinal.facade.AlunoFacade ejbFacade;
 
-    private TurmaEntity turma = new TurmaEntity();
-    private List<TurmaEntity> turmaList = new ArrayList<>();
-    private TurmaEntity selected;
+    private AlunoEntity aluno = new AlunoEntity();
+    private List<AlunoEntity> alunoList = new ArrayList<>();
+    private AlunoEntity selected;
 
-    public TurmaEntity getSelected() {
+    public AlunoEntity getSelected() {
         return selected;
     }
 
-    public void setSelected(TurmaEntity selected) {
+    public void setSelected(AlunoEntity selected) {
         this.selected = selected;
     }
 
-    public TurmaEntity getTurma() {
-        return turma;
+    public AlunoEntity getAluno() {
+        return aluno;
     }
 
-    public void setTurma(TurmaEntity turma) {
-        this.turma = turma;
+    public void setAluno(AlunoEntity aluno) {
+        this.aluno = aluno;
     }
 
-    public List<TurmaEntity> getTurmaList() {
+    public List<AlunoEntity> getAlunoList() {
         return ejbFacade.buscarTodos();
     }
 
-    public void setTurmaList(List<TurmaEntity> turmaList) {
-        this.turmaList = turmaList;
+    public void setAlunoList(List<AlunoEntity> alunoList) {
+        this.alunoList = alunoList;
     }
 
     /**
-     * Busca uma turma pelo id. Utilizado pelo converter para reconstruir
-     * o objeto TurmaEntity a partir do valor selecionado no selectOneMenu.
+     * Busca um aluno pelo id. Utilizado pelo converter para reconstruir
+     * o objeto AlunoEntity a partir do valor selecionado no selectOneMenu.
      */
-    public TurmaEntity getTurma(java.lang.Integer id) {
+    public AlunoEntity getAluno(java.lang.Integer id) {
         return ejbFacade.find(id);
     }
 
     /**
-     *
+     * 
      */
-    @FacesConverter(forClass = TurmaEntity.class)
-    public static class TurmaControllerConverter implements Converter {
+    @FacesConverter(forClass = AlunoEntity.class)
+    public static class AlunoControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            TurmaController controller
-                    = (TurmaController) facesContext.getApplication().getELResolver().
+            AlunoController controller
+                    = (AlunoController) facesContext.getApplication().getELResolver().
                             getValue(facesContext.getELContext(),
-                                    null, "turmaController");
-            return controller.getTurma(getKey(value));
+                                    null, "alunoController");
+            return controller.getAluno(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
@@ -93,8 +93,8 @@ public class TurmaController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof TurmaEntity) {
-                TurmaEntity o = (TurmaEntity) object;
+            if (object instanceof AlunoEntity) {
+                AlunoEntity o = (AlunoEntity) object;
                 return getStringKey(o.getId());
             } else {
                 return null;
@@ -103,12 +103,12 @@ public class TurmaController implements Serializable {
     }
 
     /**
-     *
+    
      * @return
      */
-    public TurmaEntity prepareAdicionar() {
-        turma = new TurmaEntity();
-        return turma;
+    public AlunoEntity prepareAdicionar() {
+        aluno = new AlunoEntity();
+        return aluno;
     }
 
     public static void addErrorMessage(String msg) {
@@ -132,7 +132,7 @@ public class TurmaController implements Serializable {
             if (null != persistAction) {
                 switch (persistAction) {
                     case CREATE:
-                        ejbFacade.createReturn(turma);
+                        ejbFacade.createReturn(aluno);
                         break;
                     case UPDATE:
                         ejbFacade.edit(selected);
@@ -164,15 +164,15 @@ public class TurmaController implements Serializable {
     }
 
     public void adicionar() {
-        persist(PersistAction.CREATE, "Turma cadastrada com sucesso!");
+        persist(PersistAction.CREATE, "Aluno cadastrado com sucesso!");
     }
 
     public void editar() {
-        persist(PersistAction.UPDATE, "Turma alterada com sucesso!");
+        persist(PersistAction.UPDATE, "Aluno alterado com sucesso!");
     }
 
     public void deletar() {
-        persist(PersistAction.DELETE, "Turma excluída com sucesso!");
+        persist(PersistAction.DELETE, "Aluno excluído com sucesso!");
     }
 
 }

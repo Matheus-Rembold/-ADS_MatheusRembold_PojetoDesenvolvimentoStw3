@@ -58,9 +58,7 @@ public class ProfessorController implements Serializable {
     }
 
     /**
-     * Método responsável por tratar das conversões para o front (xhtml).
-     * Necessário para o p:selectOneMenu funcionar com objetos ProfessorEntity,
-     * por exemplo no atributo idProfessor da entidade Turma.
+     * 
      */
     @FacesConverter(forClass = ProfessorEntity.class)
     public static class ProfessorControllerConverter implements Converter {
@@ -105,7 +103,7 @@ public class ProfessorController implements Serializable {
     }
 
     /**
-     * Prepara um novo objeto professor antes de abrir o formulário de criação.
+     * 
      */
     public ProfessorEntity prepareAdicionar() {
         professor = new ProfessorEntity();
